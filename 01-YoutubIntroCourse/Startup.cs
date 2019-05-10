@@ -17,7 +17,10 @@ namespace _01_YoutubIntroCourse
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
-            services.AddSignalR();
+            services.AddSignalR().AddRedis(options =>
+            {
+                options.Configuration.ClientName = "SignalR";
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

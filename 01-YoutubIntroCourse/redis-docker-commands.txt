@@ -1,0 +1,5 @@
+docker pull redis
+docker run --name signalr -d -p 6379:6379 redis
+docker exec -it b3 bash
+	 redis-cli
+	 client list
