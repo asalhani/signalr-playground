@@ -18,6 +18,23 @@ connection.on("ReceiveMessage", function (message) {
     document.getElementById("messages").appendChild(div);
 });
 
+connection.on("UserConnected", function(connectionId){
+    var groupElement = document.getElementById("group");
+    var option = document.createElement("option");
+    option.text = connectionId;
+    option.value = connectionId;
+    groupElement.options.add(option);
+});
+
+connection.on("UserDisconnected", function(connectionId){
+    var groupElement = document.getElementById("group");
+    for(var i = 0; i < groupElement.length; i++){
+        if(groupElement.options[i].value === connectionId){
+            groupElement.remove(i);
+        }
+    }
+});
+
 connection.start().catch(function (err) {
     console.error(err.toString());
 });
@@ -26,15 +43,16 @@ document.getElementById("sendButton").addEventListener("click", function (event)
     var message = document.getElementById("message").value;
     var groupElement = document.getElementById("group");
     var groupValue = groupElement.options[groupElement.selectedIndex].value;
-    var method = "SendMessageToAllClient";
-    if (groupValue === "Myself") {
-        connection.invoke("SendMessageToCaller", message).catch(function (err) {
-            console.error(err.toString());
+  
+    if(groupValue === "All" || groupValue === "Myself"){
+        var method = groupValue === "All" ? "SendMessageToAllClient" : "SendMessageToCaller";
+        connection.invoke(method, message).catch(function(ex){
+            console.error(ex.toString());
         });
     }
-    else {
-        connection.invoke("SendMessageToAllClient", message).catch(function (err) {
-            console.error(err.toString()); 
+    else{
+        connection.invoke("SendMessageToUser", groupValue, message).catch(function(ex){
+            console.error(ex.toString());
         });
     }
 
